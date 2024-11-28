@@ -1,0 +1,88 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="{% static 'style.css' %}" />
+        <script src="https://cdn.tailwindcss.com"></script>
+        <title>
+            {% block title %}
+                Django App
+            {% endblock  %}
+        </title>
+    </head>
+    <body>
+        <!-- Navbar -->
+    <nav class="bg-gray-900 text-white p-4">
+        <div class="container mx-auto flex items-center justify-between">
+            <!-- Logo -->
+            <a href="#" class="text-2xl font-bold">MyWebsite</a>
+
+            <!-- Navbar Links (Hidden on Mobile) -->
+            <div class="hidden md:flex space-x-8">
+                <a href="#" class="hover:text-yellow-500">Home</a>
+                <a href="#" class="hover:text-yellow-500">About</a>
+                <a href="#" class="hover:text-yellow-500">Services</a>
+                <a href="#" class="hover:text-yellow-500">Contact</a>
+                <a href="#" class="hover:text-yellow-500">Blog</a>
+            </div>
+
+            <!-- Auth Buttons or User Info (Based on Login Status) -->
+            <div class="hidden md:flex space-x-4">
+                {% if user.is_authenticated %}
+                    <a href="/profile" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-400">Profile</a>
+                    <a href="/logout" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-400">Logout</a>
+                {% else %}
+                    <a href="/signup" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-400">Sign Up</a>
+                    <a href="/login" class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-400">Login</a>
+                {% endif %}
+            </div>
+
+            <!-- Hamburger Icon (Visible on Mobile) -->
+            <div class="md:hidden flex items-center" id="hamburger-icon">
+                <button class="text-white focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Navbar Menu (Initially Hidden) -->
+        <div class="md:hidden hidden" id="mobile-menu">
+            <div class="flex flex-col space-y-4 py-4 px-8">
+                <a href="#" class="text-lg hover:text-yellow-500">Home</a>
+                <a href="#" class="text-lg hover:text-yellow-500">About</a>
+                <a href="#" class="text-lg hover:text-yellow-500">Services</a>
+                <a href="#" class="text-lg hover:text-yellow-500">Contact</a>
+                <a href="#" class="text-lg hover:text-yellow-500">Blog</a>
+                <div class="mt-4 space-x-4">
+                    {% if user.is_authenticated %}
+                        <a href="/profile" class="block text-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-400">Profile</a>
+                        <a href="/logout" class="block text-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-400">Logout</a>
+                    {% else %}
+                        <a href="/signup" class="block text-center px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-400">Sign Up</a>
+                        <a href="/login" class="block text-center px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-400">Login</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <script>
+        // Toggle mobile menu
+        const hamburgerIcon = document.getElementById('hamburger-icon');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        hamburgerIcon.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+    <div class="container h-screen bg-zinc-800 hero">
+        {% block content %}
+            <h1 class='text-24 text-zinc-200'>Welcome to Django Fun App</h1>
+        {% endblock  %}
+    </div>
+    </body>
+</html>
