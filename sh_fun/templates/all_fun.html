@@ -1,10 +1,14 @@
 {% extends 'index.html' %}
 
-
 {% block title %}
-    share your funs
+    Share Your Funs
 {% endblock  %}
 
 {% block content %}
-    
+    <div class="card  bg-zinc-600 p-5">
+        <div class="img h-[240px] w-[150px]">
+            <img src="{{ Fun.photo.url }}" class="h-[100%] w-full object-cover" alt="">
+        </div>
+        <h1>{{ Fun.text }}</h1>
+    </div>
 {% endblock  %}
