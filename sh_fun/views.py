@@ -37,9 +37,13 @@ def fun_edit(request, fun_id):
         form = FunForm(instance=fun)
     return render(request, 'create_fun.html', {'form': form})
 
+def fun_detail(request, fun_id):
+    fun = get_object_or_404(Fun, pk=fun_id)
+    return render(request, 'fun_detail.html', {'fun': fun})
+
 def fun_delete(request, fun_id):
     fun = get_object_or_404(Fun, pk=fun_id, user = request.user)
     if request.method == 'POST':
         fun.delete()
         return redirect('fun_list')
-    return render(request, 'fun_delete.html', {'form': form})
+    return render(request, 'fun_delete.html', {'fun': fun})
