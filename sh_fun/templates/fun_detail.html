@@ -1,10 +1,125 @@
 {% extends 'index.html' %}
+{% load static %}
 
-{% block title %}
-    share your funs
-{% endblock  %}
+{% block title %}{{ fun.text|truncatechars:50 }}{% endblock %}
 
 {% block content %}
-    <h1>Share Your Fun</h1>
-{% endblock  %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                {% if fun.photo %}
+                    <img src="{{ fun.photo.url }}" class="card-img-top" alt="Fun Photo">
+                {% endif %}
+                
+                <div class="card-body">
+                    <!-- Author Info -->
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="me-3">
+                            {% if fun.user.userprofile.profile_picture %}
+                                <img src="{{ fun.user.userprofile.profile_picture.url }}" 
+                                        class="rounded-circle" width="50" height="50" 
+                                        style="object-fit: cover;" alt="Profile Picture">
+                            {% else %}
+                                <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center"
+                                        style="width: 50px; height: 50px;">
+                                    <span class="text-white">{{ fun.user.username|make_list|first|upper }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <h5 class="mb-0">{{ fun.user.get_full_name|default:fun.user.username }}</h5>
+                            <small class="text-muted">
+                                <i class="fas fa-clock me-1"></i>{{ fun.created_at|date:"F j, Y, g:i a" }}
+                            </small>
+                        </div>
+                    </div>
 
+                    <!-- Fun Content -->
+                    <p class="lead mb-4">{{ fun.text }}</p>
+
+                    <!-- Metadata -->
+                    <div class="border-top pt-3">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar me-1"></i>Created: {{ fun.created_at|date:"F j, Y" }}
+                                </small>
+                            </div>
+                            <div class="col-md-6">
+                                <small class="text-muted">
+                                    <i class="fas fa-clock me-1"></i>Time: {{ fun.created_at|time:"g:i a" }}
+                                </small>
+                            </div>
+                            {% if fun.updated_at != fun.created_at %}
+                            <div class="col-12 mt-2">
+                                <small class="text-muted">
+                                    <i class="fas fa-edit me-1"></i>Last edited: {{ fun.updated_at|date:"F j, Y, g:i a" }}
+                                </small>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="mt-4">
+                        <a href="{% url 'profile' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Profile
+                        </a>
+                        {% if is_owner %}
+                            <div class="float-end">
+                                <a href="{% url 'fun_edit' fun.id %}" class="btn btn-primary me-2">
+                                    <i class="fas fa-edit me-2"></i>Edit
+                                </a>
+                                <a href="{% url 'delete_fun' fun.id %}" class="btn btn-danger" 
+                                   onclick="return confirm('Are you sure you want to delete this fun moment?')">
+                                    <i class="fas fa-trash me-2"></i>Delete
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 1rem;
+        border: none;
+    }
+    
+    .card-img-top {
+        border-top-left-radius: 1rem;
+        border-top-right-radius: 1rem;
+        max-height: 500px;
+        object-fit: cover;
+    }
+    
+    .btn {
+        border-radius: 0.5rem;
+        padding: 0.5rem 1rem;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(45deg, #0d6efd, #0a58ca);
+        border: none;
+    }
+    
+    .btn-primary:hover {
+        background: linear-gradient(45deg, #0a58ca, #084298);
+        transform: translateY(-1px);
+    }
+    
+    .btn-danger {
+        background: linear-gradient(45deg, #dc3545, #b02a37);
+        border: none;
+    }
+    
+    .btn-danger:hover {
+        background: linear-gradient(45deg, #b02a37, #842029);
+        transform: translateY(-1px);
+    }
+</style>
+{% endblock %}

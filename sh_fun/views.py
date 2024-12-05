@@ -1,16 +1,22 @@
-from django.shortcuts import render
-from .models import Fun, UserProfile
-from .forms import FunForm, UserProfileForm
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import transaction
+from .models import Fun, UserProfile
+from .forms import FunForm, UserProfileForm
 import os
 from django.conf import settings
 
 # Create your views here.
+def index(request):
+    # Get all fun posts ordered by creation date
+    funs = Fun.objects.all().order_by('-created_at')
+    return render(request, 'index.html', {
+        'funs': funs,
+        'show_create_button': request.user.is_authenticated
+    })
+
 def all_fun(request):
     return render(request, 'all_fun.html')
 
@@ -60,8 +66,11 @@ def fun_edit(request, fun_id):
 
 @login_required
 def fun_detail(request, fun_id):
-    fun = get_object_or_404(Fun, pk=fun_id)
-    return render(request, 'fun_detail.html', {'fun': fun})
+    fun = get_object_or_404(Fun, id=fun_id)
+    return render(request, 'fun_detail.html', {
+        'fun': fun,
+        'is_owner': fun.user == request.user
+    })
 
 @login_required
 def fun_delete(request, fun_id):
