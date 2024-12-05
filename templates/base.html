@@ -18,6 +18,7 @@
             --text-muted: #6c757d;
             --primary-color: #0066ff;
             --primary-hover: #0052cc;
+            --navbar-toggler-color: #1a1a1a;
         }
         
         :root[data-bs-theme="dark"] {
@@ -30,6 +31,7 @@
             --text-muted: #a1a8ae;
             --primary-color: #3b82f6;
             --primary-hover: #2563eb;
+            --navbar-toggler-color: #f8f9fa;
         }
 
         body {
@@ -209,10 +211,39 @@
         .bg-primary {
             background-color: var(--primary-color) !important;
         }
+
+        .hover-primary:hover {
+            color: var(--primary-color) !important;
+            transition: color 0.2s ease;
+        }
+
+        .text-decoration-none:hover .hover-primary {
+            color: var(--primary-color) !important;
+        }
+
+        .navbar-toggler {
+            border-color: var(--border-color);
+        }
+
+        .navbar-toggler-icon {
+            background-image: none;
+            position: relative;
+        }
+
+        .navbar-toggler-icon::before {
+            content: '\f0c9';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--navbar-toggler-color);
+        }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg">
         <div class="container">
             <a class="navbar-brand" href="{% url 'fun_list' %}">Fun App</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
