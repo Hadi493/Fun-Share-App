@@ -1,11 +1,215 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Fun App{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root[data-bs-theme="light"] {
+            --bs-body-bg: #f0f2f5;
+            --bs-body-color: #1a1a1a;
+            --card-bg: #ffffff;
+            --nav-bg: #ffffff;
+            --border-color: #e4e6e8;
+            --shadow-color: rgba(0,0,0,0.08);
+            --text-muted: #6c757d;
+            --primary-color: #0066ff;
+            --primary-hover: #0052cc;
+        }
+        
+        :root[data-bs-theme="dark"] {
+            --bs-body-bg: #212529;
+            --bs-body-color: #f8f9fa;
+            --card-bg: #2c3034;
+            --nav-bg: #2c3034;
+            --border-color: rgba(255,255,255,.125);
+            --shadow-color: rgba(0,0,0,0.3);
+            --text-muted: #a1a8ae;
+            --primary-color: #3b82f6;
+            --primary-hover: #2563eb;
+        }
+
+        body {
+            min-height: 100vh;
+            transition: background-color 0.3s ease;
+            color: var(--bs-body-color);
+        }
+
+        .navbar {
+            background-color: var(--nav-bg) !important;
+            box-shadow: 0 1px 3px var(--shadow-color);
+            transition: all 0.3s ease;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary-color) !important;
+        }
+
+        .theme-toggle-btn {
+            background: none;
+            border: none;
+            color: var(--bs-body-color);
+            padding: 8px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle-btn:hover {
+            transform: rotate(15deg);
+            color: var(--primary-color);
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px var(--shadow-color);
+        }
+
+        .btn {
+            border-radius: 8px;
+            padding: 8px 16px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-primary {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .alert {
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 4px var(--shadow-color);
+        }
+
+        /* Smooth transitions for theme switching */
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bs-body-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--text-muted);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-color);
+        }
+
+        /* Navigation link hover effect */
+        .nav-link {
+            position: relative;
+            padding: 8px 16px;
+            color: var(--bs-body-color) !important;
+            opacity: 0.8;
+        }
+
+        .nav-link:hover {
+            opacity: 1;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            background-color: var(--primary-color);
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Container padding improvements */
+        .container {
+            padding: 20px;
+            max-width: 1200px;
+        }
+
+        /* Form controls */
+        .form-control {
+            border-radius: 8px;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+            color: var(--bs-body-color);
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 0 3px rgba(0,102,255,0.15);
+            border-color: var(--primary-color);
+        }
+
+        /* Text colors */
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+
+        /* Card title and text */
+        .card-title {
+            color: var(--bs-body-color);
+            font-weight: 600;
+        }
+
+        .card-text {
+            color: var(--bs-body-color);
+            opacity: 0.9;
+        }
+
+        /* Display headings */
+        .display-4 {
+            color: var(--bs-body-color);
+            font-weight: 700;
+        }
+
+        /* Background colors */
+        .bg-primary {
+            background-color: var(--primary-color) !important;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -26,6 +230,11 @@
                     {% endif %}
                 </ul>
                 <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <button class="theme-toggle-btn" id="themeToggle">
+                            <i class="fas fa-moon"></i>
+                        </button>
+                    </li>
                     {% if user.is_authenticated %}
                     <li class="nav-item">
                         <span class="nav-link">Welcome, {{ user.username }}</span>
@@ -60,5 +269,35 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = themeToggle.querySelector('i');
+            
+            // Check for saved theme preference or default to 'light'
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', currentTheme);
+            updateThemeIcon(currentTheme);
+
+            themeToggle.addEventListener('click', function() {
+                const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                
+                document.documentElement.setAttribute('data-bs-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeIcon(newTheme);
+            });
+
+            function updateThemeIcon(theme) {
+                if (theme === 'dark') {
+                    themeIcon.classList.remove('fa-moon');
+                    themeIcon.classList.add('fa-sun');
+                } else {
+                    themeIcon.classList.remove('fa-sun');
+                    themeIcon.classList.add('fa-moon');
+                }
+            }
+        });
+    </script>
 </body>
 </html>

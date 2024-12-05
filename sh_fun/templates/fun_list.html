@@ -1,47 +1,68 @@
 {% extends 'index.html' %}
 
 {% block content %}
-    <div class="container h-100">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>All Funs</h1>
-            <a href="{% url 'create_fun' %}" class="btn btn-success">Share Your Fun</a>
-        </div>
-        
-        <div class="row justify-content-center">
-            {% for fun in funs %}
-                <div class="col-md-6 mb-4">
-                    <div class="card shadow-sm">
-                        {% if fun.photo %}
-                            <div class="card-img-container" style="height: 200px; overflow: hidden;">
-                                <img src="{{ fun.photo.url }}" class="card-img-top" alt="{{ fun.user.username }}'s fun" 
-                                    style="object-fit: cover; height: 100%; width: 100%;">
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <h1 class="display-4 fw-bold">All Funs</h1>
+        <a href="{% url 'create_fun' %}" class="btn btn-primary">
+            <i class="fas fa-plus-circle me-2"></i>Share Your Fun
+        </a>
+    </div>
+    
+    <div class="row g-4">
+        {% for fun in funs %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100">
+                    {% if fun.photo %}
+                        <div class="card-img-container position-relative" style="height: 200px;">
+                            <img src="{{ fun.photo.url }}" class="card-img-top" alt="{{ fun.user.username }}'s fun" 
+                                style="object-fit: cover; height: 100%; width: 100%; border-top-left-radius: 15px; border-top-right-radius: 15px;">
+                        </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="d-flex align-items-center">
+                                <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" 
+                                        style="width: 40px; height: 40px;">
+                                    <span class="text-white fw-bold">{{ fun.user.username|first|upper }}</span>
+                                </div>
+                                <div class="ms-2">
+                                    <h5 class="card-title mb-0">{{ fun.user.username }}</h5>
+                                    <small class="text-muted">{{ fun.created_at|timesince }} ago</small>
+                                </div>
                             </div>
-                        {% endif %}
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h5 class="card-title mb-0">{{ fun.user.username }}</h5>
-                                <small class="text-muted">{{ fun.created_at|timesince }} ago</small>
-                            </div>
-                            <p class="card-text">{{ fun.text }}</p>
-                            <div class="d-flex justify-content-between align-items-center mt-3">
-                                <a href="{% url 'fun_detail' fun.id %}" class="btn btn-primary">View Details</a>
-                                {% if user == fun.user %}
-                                    <div class="btn-group">
-                                        <a href="{% url 'fun_edit' fun.id %}" class="btn btn-outline-secondary">Edit</a>
-                                        <a href="{% url 'fun_delete' fun.id %}" class="btn btn-outline-danger">Delete</a>
-                                    </div>
-                                {% endif %}
-                            </div>
+                        </div>
+                        <p class="card-text">{{ fun.text|truncatewords:30 }}</p>
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <a href="{% url 'fun_detail' fun.id %}" class="btn btn-primary">
+                                <i class="fas fa-eye me-2"></i>View Details
+                            </a>
+                            {% if user == fun.user %}
+                                <div class="btn-group">
+                                    <a href="{% url 'fun_edit' fun.id %}" class="btn btn-outline-primary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'fun_delete' fun.id %}" class="btn btn-outline-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
-            {% empty %}
-                <div class="col-md-8 text-center">
-                    <div class="alert alert-info">
-                        <p class="mb-0">No funs shared yet. Be the first to share!</p>
-                    </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="text-center py-5">
+                    <i class="fas fa-comment-dots fa-4x text-muted mb-4"></i>
+                    <h3 class="text-muted">No funs shared yet</h3>
+                    <p class="lead mb-4">Be the first to share something fun!</p>
+                    <a href="{% url 'create_fun' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-plus-circle me-2"></i>Share Your First Fun
+                    </a>
                 </div>
-            {% endfor %}
-        </div>
+            </div>
+        {% endfor %}
     </div>
+</div>
 {% endblock %}
