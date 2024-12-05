@@ -1,9 +1,49 @@
-{% extends 'index.html' %}
+{% extends 'base.html' %}
+{% load static %}
 
-{% block title %}
-    share your funs
-{% endblock  %}
+{% block title %}Edit Fun Moment{% endblock %}
 
 {% block content %}
-    <h1>Edit Fun</h1>
-{% endblock  %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="card-title mb-4">
+                        <i class="fas fa-edit text-primary me-2"></i>Edit Fun Moment
+                    </h2>
+                    
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="id_text" class="form-label">What's on your mind?</label>
+                            <textarea name="text" id="id_text" class="form-control" rows="4">{{ form.text.value|default:'' }}</textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="id_photo" class="form-label">Photo (optional)</label>
+                            {% if fun.photo %}
+                                <div class="mb-2">
+                                    <img src="{{ fun.photo.url }}" alt="Current Photo" class="img-fluid rounded" style="max-height: 200px;">
+                                    <p class="text-muted small mt-1">Current photo</p>
+                                </div>
+                            {% endif %}
+                            <input type="file" name="photo" id="id_photo" class="form-control" accept="image/*">
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{% url 'fun_detail' fun.id %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-1"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         :root[data-bs-theme="light"] {
-            --bs-body-bg: #f0f2f5;
+            --bs-body-bg: #f8f9fa;
             --bs-body-color: #1a1a1a;
             --card-bg: #ffffff;
             --nav-bg: #ffffff;
@@ -19,32 +19,39 @@
             --primary-color: #0066ff;
             --primary-hover: #0052cc;
             --navbar-toggler-color: #1a1a1a;
+            --card-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            --card-hover-shadow: 0 8px 16px rgba(0,0,0,0.1);
         }
         
         :root[data-bs-theme="dark"] {
-            --bs-body-bg: #212529;
+            --bs-body-bg: #121212;
             --bs-body-color: #f8f9fa;
-            --card-bg: #2c3034;
-            --nav-bg: #2c3034;
+            --card-bg: #1e1e1e;
+            --nav-bg: #1e1e1e;
             --border-color: rgba(255,255,255,.125);
             --shadow-color: rgba(0,0,0,0.3);
             --text-muted: #a1a8ae;
             --primary-color: #3b82f6;
             --primary-hover: #2563eb;
             --navbar-toggler-color: #f8f9fa;
+            --card-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            --card-hover-shadow: 0 8px 16px rgba(0,0,0,0.4);
         }
 
         body {
             min-height: 100vh;
-            transition: background-color 0.3s ease;
+            transition: all 0.3s ease;
             color: var(--bs-body-color);
+            background-color: var(--bs-body-bg);
         }
 
         .navbar {
             background-color: var(--nav-bg) !important;
-            box-shadow: 0 1px 3px var(--shadow-color);
+            box-shadow: var(--card-shadow);
             transition: all 0.3s ease;
             border-bottom: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
         }
 
         .navbar-brand {
@@ -70,74 +77,68 @@
         .card {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
-            box-shadow: 0 2px 4px var(--shadow-color);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            overflow: hidden;
         }
 
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 8px 16px var(--shadow-color);
+            box-shadow: var(--card-hover-shadow);
         }
 
         .btn {
-            border-radius: 8px;
-            padding: 8px 16px;
+            border-radius: 12px;
+            padding: 8px 20px;
             transition: all 0.3s ease;
-            font-weight: 500;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-sm {
+            border-radius: 8px;
+            padding: 6px 12px;
         }
 
         .btn-primary {
             background-color: var(--primary-color);
             border: none;
+            box-shadow: 0 2px 4px rgba(0,102,255,0.2);
         }
 
         .btn-primary:hover {
             background-color: var(--primary-hover);
             transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,102,255,0.3);
         }
 
-        .btn-outline-primary {
-            border-color: var(--primary-color);
-            color: var(--primary-color);
+        .hover-primary:hover {
+            color: var(--primary-color) !important;
+            transition: all 0.2s ease;
         }
 
-        .btn-outline-primary:hover {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-            color: white;
+        .text-decoration-none:hover .hover-primary {
+            color: var(--primary-color) !important;
+            transform: translateX(2px);
         }
 
-        .alert {
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 2px 4px var(--shadow-color);
+        .rounded-circle {
+            transition: all 0.3s ease;
         }
 
-        /* Smooth transitions for theme switching */
-        * {
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        a:hover .rounded-circle {
+            transform: scale(1.05);
         }
 
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
+        .card-img-top {
+            transition: all 0.5s ease;
         }
 
-        ::-webkit-scrollbar-track {
-            background: var(--bs-body-bg);
+        .card:hover .card-img-top {
+            transform: scale(1.02);
         }
 
-        ::-webkit-scrollbar-thumb {
-            background: var(--text-muted);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-color);
-        }
-
-        /* Navigation link hover effect */
         .nav-link {
             position: relative;
             padding: 8px 16px;
@@ -210,15 +211,6 @@
         /* Background colors */
         .bg-primary {
             background-color: var(--primary-color) !important;
-        }
-
-        .hover-primary:hover {
-            color: var(--primary-color) !important;
-            transition: color 0.2s ease;
-        }
-
-        .text-decoration-none:hover .hover-primary {
-            color: var(--primary-color) !important;
         }
 
         .navbar-toggler {
