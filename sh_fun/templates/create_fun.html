@@ -1,16 +1,103 @@
 {% extends 'index.html' %}
+{% load static %}
 
-{% block title %}
-    share your funs
-{% endblock  %}
+{% block title %}Create Fun Moment{% endblock %}
 
 {% block content %}
-    <a href="{% url 'all_fun' %}" class="btn btn-secondary">Back to funs</a>
-    <h1>Create a new Fun</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h2 class="card-title mb-4">
+                        <i class="fas fa-smile me-2"></i>Share a Fun Moment
+                    </h2>
+                    
+                    <form method="post" enctype="multipart/form-data" class="fun-form">
+                        {% csrf_token %}
+                        
+                        <!-- Text Input -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">What's your fun moment?</label>
+                            {{ form.text }}
+                            {% if form.text.errors %}
+                                <div class="text-danger">
+                                    {{ form.text.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Photo Upload -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Add a photo (optional)</label>
+                            <div class="input-group">
+                                {{ form.photo }}
+                            </div>
+                            {% if form.photo.errors %}
+                                <div class="text-danger">
+                                    {{ form.photo.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Preview Image -->
+                        <div id="imagePreview" class="mb-3 d-none">
+                            <img src="" alt="Preview" class="img-fluid rounded">
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-share me-2"></i>Share Fun Moment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Share</button>
-    </form>
-{% endblock  %}
+<style>
+    .card {
+        border-radius: 1rem;
+        border: none;
+    }
+    
+    .btn-primary {
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        background: linear-gradient(45deg, #0d6efd, #0a58ca);
+        border: none;
+    }
+    
+    .btn-primary:hover {
+        background: linear-gradient(45deg, #0a58ca, #084298);
+        transform: translateY(-1px);
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const photoInput = document.getElementById('id_photo');
+    const previewDiv = document.getElementById('imagePreview');
+    const previewImg = previewDiv.querySelector('img');
+    
+    photoInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                previewDiv.classList.remove('d-none');
+            }
+            
+            reader.readAsDataURL(this.files[0]);
+        } else {
+            previewDiv.classList.add('d-none');
+            previewImg.src = '';
+        }
+    });
+});
+</script>
+{% endblock %}
