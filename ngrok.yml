@@ -1,0 +1,14 @@
+version: "2"
+authtoken: "YOUR_AUTH_TOKEN"  # Replace with your actual ngrok auth token from https://dashboard.ngrok.com/get-started/your-authtoken
+
+tunnels:
+  django:
+    proto: http
+    addr: 8000  # Django's default port
+    inspect: true
+    
+  # You can add more tunnel configurations here if needed
+  # example:
+  # another-service:
+  #   proto: http
+  #   addr: 3000
