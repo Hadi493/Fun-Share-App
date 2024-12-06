@@ -17,4 +17,5 @@ urlpatterns = [
     path('register/', views.register_view, name='register'),  # Rename signup to register for consistency
     path('profile/', views.profile_view, name='profile'),
     path('profile/<str:username>/', views.profile_detail, name='profile_detail'),
+    path('verify-email/<str:token>/', views.verify_email, name='verify_email'),
 ]

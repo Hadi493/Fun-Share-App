@@ -33,6 +33,8 @@ class UserProfile(models.Model):
     location = models.CharField(max_length=100, blank=True, null=True)
     birth_date = models.DateField(null=True, blank=True)
     website = models.URLField(max_length=200, blank=True, null=True)
+    email_verified = models.BooleanField(default=False)
+    email_verification_token = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return f"{self.user.username}'s profile"
@@ -53,10 +55,14 @@ class UserProfile(models.Model):
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
+    """Create a UserProfile for every new User"""
     if created:
         UserProfile.objects.create(user=instance)
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
-    instance.userprofile.save()
-
+    """Save the UserProfile when the User is saved"""
+    try:
+        instance.userprofile.save()
+    except UserProfile.DoesNotExist:
+        UserProfile.objects.create(user=instance)

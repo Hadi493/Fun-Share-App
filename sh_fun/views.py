@@ -5,7 +5,8 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from django.db import transaction
 from .models import Fun, UserProfile
-from .forms import FunForm, UserProfileForm
+from .forms import FunForm, UserProfileForm, CustomUserCreationForm
+from .utils import send_verification_email
 import os
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -91,6 +92,20 @@ def profile_detail(request, username):
         'user_funs': user_funs
     })
 
+def verify_email(request, token):
+    try:
+        profile = UserProfile.objects.get(email_verification_token=token)
+        if not profile.email_verified:
+            profile.email_verified = True
+            profile.email_verification_token = None
+            profile.save()
+            messages.success(request, 'Your email has been verified successfully! You can now log in.')
+        else:
+            messages.info(request, 'Your email was already verified.')
+    except UserProfile.DoesNotExist:
+        messages.error(request, 'Invalid verification link.')
+    return redirect('login')
+
 def login_view(request):
     if request.user.is_authenticated:
         return redirect('fun_list')
@@ -101,29 +116,37 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         
         if user is not None:
-            login(request, user)
-            next_url = request.GET.get('next', 'fun_list')
-            return redirect(next_url)
+            # Check if email is verified
+            if user.userprofile.email_verified:
+                login(request, user)
+                messages.success(request, f'Welcome back, {user.first_name}!')
+                return redirect('fun_list')
+            else:
+                messages.warning(request, 'Please verify your email address before logging in.')
         else:
             messages.error(request, 'Invalid username or password.')
     
     return render(request, 'login.html')
 
+@transaction.atomic
 def register_view(request):
     if request.user.is_authenticated:
         return redirect('fun_list')
         
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)
-            messages.success(request, 'Registration successful! Welcome to Fun App!')
-            return redirect('fun_list')
+            # Send verification email
+            send_verification_email(user, request)
+            messages.success(request, 'Registration successful! Please check your email to verify your account.')
+            return redirect('login')
         else:
-            messages.error(request, 'Please correct the errors below.')
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f'{error}')
     else:
-        form = UserCreationForm()
+        form = CustomUserCreationForm()
     return render(request, 'register.html', {'form': form})
 
 def logout_view(request):

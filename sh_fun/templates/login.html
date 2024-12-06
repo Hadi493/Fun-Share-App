@@ -1,4 +1,4 @@
-{% extends 'index.html' %}
+{% extends 'auth_base.html' %}
 
 {% block title %}Login{% endblock %}
 
@@ -6,47 +6,50 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-5">
-            <div class="card shadow-sm">
+            <div class="card">
                 <div class="card-body p-4">
                     <div class="text-center mb-4">
-                        <h1 class="h3 mb-3 fw-normal">Welcome Back!</h1>
-                        <p class="text-muted">Please sign in to continue</p>
+                        <h1 class="h3 fw-bold mb-2">Welcome Back!</h1>
+                        <p class="text-muted">Sign in to continue sharing fun moments</p>
                     </div>
 
                     {% if messages %}
                         {% for message in messages %}
-                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show mb-3" role="alert">
                                 {{ message }}
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
                         {% endfor %}
                     {% endif %}
 
-                    <form method="post" class="needs-validation" novalidate>
+                    <form method="post" novalidate>
                         {% csrf_token %}
-                        <div class="form-floating mb-3">
-                            <input type="text" name="username" class="form-control" id="username" placeholder="Username" required>
-                            <label for="username">Username</label>
+                        <div class="form-group">
+                            <input type="text" name="username" class="form-control" id="username" placeholder="Enter your username" required>
+                            <i class="fas fa-user"></i>
                         </div>
-                        <div class="form-floating mb-3">
-                            <input type="password" name="password" class="form-control" id="password" placeholder="Password" required>
-                            <label for="password">Password</label>
+                        
+                        <div class="form-group">
+                            <input type="password" name="password" class="form-control" id="password" placeholder="Enter your password" required>
+                            <i class="fas fa-lock"></i>
                         </div>
 
-                        <div class="d-grid gap-2">
-                            <button class="btn btn-primary btn-lg" type="submit">
-                                <i class="fas fa-sign-in-alt me-2"></i>Sign in
-                            </button>
-                        </div>
+                        <button class="btn btn-primary w-100" type="submit">
+                            <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                        </button>
                     </form>
 
                     <div class="text-center mt-4">
-                        <p class="text-muted">
-                            Don't have an account? 
-                            <a href="{% url 'register' %}" class="text-decoration-none">
-                                Register here
-                                <i class="fas fa-arrow-right ms-1"></i>
-                            </a>
+                        <p class="text-muted mb-4">Or continue with</p>
+                        <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-outline-secondary w-100">
+                            <i class="fab fa-google me-2"></i>Sign in with Google
+                        </a>
+                    </div>
+                        
+                    <div class="text-center mt-4">
+                        <p class="text-muted mb-0">
+                            New to Fun App? 
+                            <a href="{% url 'register' %}">Create an account</a>
                         </p>
                     </div>
                 </div>
@@ -54,42 +57,4 @@
         </div>
     </div>
 </div>
-
-<style>
-    .form-floating > label {
-        color: var(--text-muted);
-    }
-    .form-control:focus {
-        border-color: var(--primary-color);
-        box-shadow: 0 0 0 0.25rem rgba(var(--primary-color-rgb), 0.25);
-    }
-    .btn-primary {
-        padding: 0.8rem 1.5rem;
-        font-weight: 500;
-    }
-    .card {
-        border: none;
-        border-radius: 1rem;
-    }
-    .alert {
-        border: none;
-    }
-</style>
-
-<script>
-// Form validation
-(function () {
-    'use strict'
-    var forms = document.querySelectorAll('.needs-validation')
-    Array.prototype.slice.call(forms).forEach(function (form) {
-        form.addEventListener('submit', function (event) {
-            if (!form.checkValidity()) {
-                event.preventDefault()
-                event.stopPropagation()
-            }
-            form.classList.add('was-validated')
-        }, false)
-    })
-})()
-</script>
 {% endblock %}
