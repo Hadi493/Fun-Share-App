@@ -1,42 +1,155 @@
-{% extends 'index.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
 {% block title %}{{ user.username }}'s Profile{% endblock %}
 
 {% block content %}
 <div class="container py-5">
-    <!-- Profile Header -->
-    <div class="row mb-5">
-        <div class="col-md-12">
-            <div class="card bg-primary text-white">
-                <div class="card-body p-4">
-                    <div class="row align-items-center">
-                        <div class="col-auto">
-                            <div class="profile-pic-wrapper">
-                                {% if profile.profile_picture and profile.profile_picture.url != '/media/profile_pics/default.png' %}
-                                    <img src="{{ profile.profile_picture.url }}" alt="Profile Picture" 
-                                         class="rounded-circle profile-pic">
-                                {% else %}
-                                    <div class="default-profile-pic rounded-circle d-flex align-items-center justify-content-center bg-secondary">
-                                        <span class="display-4 text-white">{{ user.username|make_list|first|upper }}</span>
-                                    </div>
-                                {% endif %}
-                                
-                                {% if user == request.user %}
-                                    <div class="profile-pic-overlay">
-                                        <label for="id_profile_picture" class="btn btn-light btn-sm rounded-circle">
-                                            <i class="fas fa-camera"></i>
-                                        </label>
-                                    </div>
-                                {% endif %}
+    <div class="row">
+        <!-- Profile Info Card -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        {% if user.userprofile.profile_picture %}
+                            <img src="{{ user.userprofile.profile_picture.url }}" alt="{{ user.username }}" class="rounded-circle img-fluid" style="width: 150px; height: 150px; object-fit: cover;">
+                        {% else %}
+                            <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center mx-auto" style="width: 150px; height: 150px;">
+                                <span class="display-4 text-white">{{ user.username|make_list|first|upper }}</span>
                             </div>
+                        {% endif %}
+                    </div>
+                    <h3 class="fw-bold mb-1">{{ user.username }}</h3>
+                    {% if user.userprofile.bio %}
+                        <p class="text-muted mb-3">{{ user.userprofile.bio }}</p>
+                    {% endif %}
+                    <div class="d-flex justify-content-center gap-3 mb-4">
+                        <div class="text-center">
+                            <h4 class="mb-0">{{ user.fun_set.count }}</h4>
+                            <small class="text-muted">Posts</small>
                         </div>
-                        <div class="col">
-                            <h1 class="display-4 mb-2">{{ user.get_full_name|default:user.username }}</h1>
-                            {% if profile.bio %}
-                                <p class="lead mb-0">{{ profile.bio }}</p>
+                        <div class="text-center">
+                            <h4 class="mb-0">{{ user.userprofile.followers.count }}</h4>
+                            <small class="text-muted">Followers</small>
+                        </div>
+                        <div class="text-center">
+                            <h4 class="mb-0">{{ user.userprofile.following.count }}</h4>
+                            <small class="text-muted">Following</small>
+                        </div>
+                    </div>
+                    {% if user == request.user %}
+                        <a href="{% url 'edit_profile' %}" class="btn btn-primary w-100">
+                            <i class="fas fa-edit me-2"></i>Edit Profile
+                        </a>
+                    {% else %}
+                        <button class="btn btn-primary w-100 follow-btn" 
+                                data-user-id="{{ user.id }}"
+                                data-following="{% if request.user.userprofile in user.userprofile.followers.all %}true{% else %}false{% endif %}">
+                            {% if request.user.userprofile in user.userprofile.followers.all %}
+                                <i class="fas fa-user-minus me-2"></i>Unfollow
                             {% else %}
-                                <p class="lead mb-0 text-white-50">No bio yet</p>
+                                <i class="fas fa-user-plus me-2"></i>Follow
+                            {% endif %}
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Additional Info Card -->
+            <div class="card shadow-sm mt-4">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">About</h5>
+                    <div class="mb-3">
+                        <p class="mb-1"><i class="fas fa-envelope me-2 text-muted"></i>{{ user.email }}</p>
+                        {% if user.userprofile.location %}
+                            <p class="mb-1"><i class="fas fa-map-marker-alt me-2 text-muted"></i>{{ user.userprofile.location }}</p>
+                        {% endif %}
+                        {% if user.userprofile.website %}
+                            <p class="mb-1">
+                                <i class="fas fa-globe me-2 text-muted"></i>
+                                <a href="{{ user.userprofile.website }}" target="_blank" class="text-decoration-none">{{ user.userprofile.website }}</a>
+                            </p>
+                        {% endif %}
+                        <p class="mb-1"><i class="fas fa-calendar me-2 text-muted"></i>Joined {{ user.date_joined|date:"F Y" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Posts -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <ul class="nav nav-pills mb-4" id="profileTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="posts-tab" data-bs-toggle="pill" data-bs-target="#posts" type="button" role="tab">
+                                <i class="fas fa-th me-2"></i>Posts
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="liked-tab" data-bs-toggle="pill" data-bs-target="#liked" type="button" role="tab">
+                                <i class="fas fa-heart me-2"></i>Liked
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="profileTabsContent">
+                        <!-- Posts Tab -->
+                        <div class="tab-pane fade show active" id="posts" role="tabpanel">
+                            {% if user.fun_set.all %}
+                                <div class="row g-4">
+                                    {% for fun in user.fun_set.all %}
+                                        <div class="col-md-6">
+                                            <div class="card h-100">
+                                                {% if fun.photo %}
+                                                    <img src="{{ fun.photo.url }}" class="card-img-top" alt="{{ fun.text }}" style="height: 200px; object-fit: cover;">
+                                                {% endif %}
+                                                <div class="card-body">
+                                                    <p class="card-text">{{ fun.text|truncatechars:100 }}</p>
+                                                    <p class="card-text text-muted small">{{ fun.created_at|date:"M d, Y" }}</p>
+                                                    <a href="{% url 'fun_detail' fun.id %}" class="btn btn-sm btn-outline-primary">View Post</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="text-center py-5">
+                                    <i class="fas fa-camera fa-3x text-muted mb-3"></i>
+                                    <h5>No posts yet</h5>
+                                    <p class="text-muted">When you create posts, they will appear here.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Liked Posts Tab -->
+                        <div class="tab-pane fade" id="liked" role="tabpanel">
+                            {% if user.liked_posts.all %}
+                                <div class="row g-4">
+                                    {% for fun in user.liked_posts.all %}
+                                        <div class="col-md-6">
+                                            <div class="card h-100">
+                                                {% if fun.photo %}
+                                                    <img src="{{ fun.photo.url }}" class="card-img-top" alt="{{ fun.text }}" style="height: 200px; object-fit: cover;">
+                                                {% endif %}
+                                                <div class="card-body">
+                                                    <p class="card-text">{{ fun.text|truncatechars:100 }}</p>
+                                                    <p class="card-text text-muted small">
+                                                        <a href="{% url 'profile' fun.user.username %}" class="text-decoration-none">{{ fun.user.username }}</a>
+                                                        • {{ fun.created_at|date:"M d, Y" }}
+                                                    </p>
+                                                    <a href="{% url 'fun_detail' fun.id %}" class="btn btn-sm btn-outline-primary">View Post</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="text-center py-5">
+                                    <i class="fas fa-heart fa-3x text-muted mb-3"></i>
+                                    <h5>No liked posts</h5>
+                                    <p class="text-muted">Posts you like will appear here.</p>
+                                </div>
                             {% endif %}
                         </div>
                     </div>
@@ -44,170 +157,39 @@
             </div>
         </div>
     </div>
-
-    <div class="row">
-        <!-- Profile Information -->
-        <div class="col-md-4 mb-4">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h3 class="card-title border-bottom pb-3">Profile Information</h3>
-                    <form method="post" enctype="multipart/form-data" class="profile-form">
-                        {% csrf_token %}
-                        
-                        <!-- Profile Picture Upload -->
-                        <div class="mb-3">
-                            <label class="form-label">Profile Picture</label>
-                            {{ user_form.profile_picture }}
-                        </div>
-
-                        <!-- Personal Information -->
-                        <div class="mb-3">
-                            <label class="form-label">First Name</label>
-                            {{ user_form.first_name }}
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Last Name</label>
-                            {{ user_form.last_name }}
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            {{ user_form.email }}
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Bio</label>
-                            {{ user_form.bio }}
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Location</label>
-                            {{ user_form.location }}
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Birth Date</label>
-                            {{ user_form.birth_date }}
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Website</label>
-                            {{ user_form.website }}
-                        </div>
-
-                        <button type="submit" class="btn btn-primary w-100">Update Profile</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <!-- User's Funs -->
-        <div class="col-md-8">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
-                        <h3 class="card-title mb-0">Your Funs</h3>
-                        <a href="{% url 'create_fun' %}" class="btn btn-primary">
-                            <i class="fas fa-plus"></i> New Fun
-                        </a>
-                    </div>
-
-                    {% if funs %}
-                        <div class="row g-4">
-                            {% for fun in funs %}
-                                <div class="col-md-6">
-                                    <div class="card h-100 shadow-sm">
-                                        {% if fun.photo %}
-                                            <img src="{{ fun.photo.url }}" class="card-img-top" alt="Fun Photo" style="height: 200px; object-fit: cover;">
-                                        {% endif %}
-                                        <div class="card-body">
-                                            <p class="card-text">{{ fun.text|truncatechars:100 }}</p>
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <small class="text-muted">
-                                                    <i class="fas fa-clock me-1"></i>
-                                                    {{ fun.created_at|date:"F j, Y" }}
-                                                </small>
-                                                <div class="btn-group">
-                                                    <a href="{% url 'fun_detail' fun.id %}" class="btn btn-sm btn-primary">
-                                                        <i class="fas fa-eye me-1"></i>View Detail
-                                                    </a>
-                                                    {% if user == fun.user %}
-                                                        <a href="{% url 'fun_edit' fun.id %}" class="btn btn-sm btn-outline-secondary">
-                                                            <i class="fas fa-edit"></i>
-                                                        </a>
-                                                        <a href="{% url 'delete_fun' fun.id %}" class="btn btn-sm btn-outline-danger" 
-                                                           onclick="return confirm('Are you sure you want to delete this fun moment?')">
-                                                            <i class="fas fa-trash"></i>
-                                                        </a>
-                                                    {% endif %}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <div class="text-center text-muted py-5">
-                            <i class="fas fa-smile-beam fa-3x mb-3"></i>
-                            <p>No funs shared yet. Start sharing your moments!</p>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
-<style>
-    .profile-pic-wrapper {
-        position: relative;
-        width: 150px;
-        height: 150px;
-    }
-
-    .profile-pic,
-    .default-profile-pic {
-        width: 150px;
-        height: 150px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .profile-pic {
-        object-fit: cover;
-    }
-
-    .default-profile-pic {
-        background-color: #6c757d;
-    }
-
-    .profile-pic-overlay {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        background: rgba(255,255,255,0.8);
-        border-radius: 50%;
-        padding: 5px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .profile-pic-overlay:hover {
-        background: rgba(255,255,255,1);
-    }
-
-    #id_profile_picture {
-        display: none;
-    }
-
-    .btn-group .btn {
-        margin: 0 2px;
-    }
-</style>
-
+<!-- Follow/Unfollow JavaScript -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const fileInput = document.getElementById('id_profile_picture');
-    if (fileInput) {
-        fileInput.addEventListener('change', function() {
-            if (this.files && this.files[0]) {
-                document.querySelector('form.profile-form').submit();
-            }
+    const followBtn = document.querySelector('.follow-btn');
+    if (followBtn) {
+        followBtn.addEventListener('click', function() {
+            const userId = this.dataset.userId;
+            const following = this.dataset.following === 'true';
+            
+            fetch(`/follow/${userId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Update button text and icon
+                    this.innerHTML = following ? 
+                        '<i class="fas fa-user-plus me-2"></i>Follow' :
+                        '<i class="fas fa-user-minus me-2"></i>Unfollow';
+                    this.dataset.following = (!following).toString();
+                    
+                    // Update followers count
+                    const followersCount = document.querySelector('.followers-count');
+                    if (followersCount) {
+                        followersCount.textContent = data.followers_count;
+                    }
+                }
+            });
         });
     }
 });
