@@ -20,9 +20,11 @@ ALLOWED_HOSTS = [
     '.ngrok-free.app',  # This will match any subdomain of ngrok-free.app
 ]
 
-# CSRF Trusted Origins for ngrok
+# CSRF Settings
 CSRF_TRUSTED_ORIGINS = [
-    f'https://{host}' for host in ALLOWED_HOSTS if host.endswith('.ngrok-free.app')
+    'https://*.ngrok-free.app',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000'
 ]
 
 # Application definition
@@ -132,13 +134,15 @@ SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
 SOCIAL_AUTH_RAISE_EXCEPTIONS = False
 
 # Email Configuration
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'your-email@gmail.com'
-EMAIL_HOST_PASSWORD = 'your-app-password'
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Change to console backend for development
+# For production, uncomment these lines and set up proper credentials:
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'your-email@gmail.com'  # Set your Gmail address
+# EMAIL_HOST_PASSWORD = 'your-16-digit-app-password'  # Set your App Password
+# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Internationalization
 LANGUAGE_CODE = 'en-us'
@@ -153,7 +157,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
 
-# Media files
+# Media files (User uploaded files)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 

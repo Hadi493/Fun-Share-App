@@ -45,12 +45,17 @@ def fun_detail(request, fun_id):
 
 @login_required
 def fun_edit(request, fun_id):
-    fun = get_object_or_404(Fun, id=fun_id, user=request.user)
+    fun = get_object_or_404(Fun, id=fun_id)
+    # Allow edit if user is admin or post owner
+    if not (request.user.is_superuser or fun.user == request.user):
+        messages.error(request, "You don't have permission to edit this post.")
+        return redirect('fun_detail', fun_id=fun.id)
+        
     if request.method == 'POST':
         form = FunForm(request.POST, request.FILES, instance=fun)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Your fun moment has been updated!')
+            messages.success(request, 'Fun moment has been updated!')
             return redirect('fun_detail', fun_id=fun.id)
     else:
         form = FunForm(instance=fun)
@@ -58,10 +63,15 @@ def fun_edit(request, fun_id):
 
 @login_required
 def fun_delete(request, fun_id):
-    fun = get_object_or_404(Fun, id=fun_id, user=request.user)
+    fun = get_object_or_404(Fun, id=fun_id)
+    # Allow delete if user is admin or post owner
+    if not (request.user.is_superuser or fun.user == request.user):
+        messages.error(request, "You don't have permission to delete this post.")
+        return redirect('fun_detail', fun_id=fun.id)
+        
     if request.method == 'POST':
         fun.delete()
-        messages.success(request, 'Your fun moment has been deleted.')
+        messages.success(request, 'Fun moment has been deleted.')
         return redirect('fun_list')
     return render(request, 'fun_delete.html', {'fun': fun})
 
@@ -80,6 +90,21 @@ def profile_view(request):
     return render(request, 'profile.html', {
         'form': form,
         'user_funs': user_funs
+    })
+
+@login_required
+def edit_profile(request):
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, request.FILES, instance=request.user.userprofile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Profile updated successfully!')
+            return redirect('profile')
+    else:
+        form = UserProfileForm(instance=request.user.userprofile)
+    
+    return render(request, 'edit_profile.html', {
+        'form': form,
     })
 
 def profile_detail(request, username):
@@ -137,9 +162,10 @@ def register_view(request):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            # Send verification email
-            send_verification_email(user, request)
-            messages.success(request, 'Registration successful! Please check your email to verify your account.')
+            # Update the automatically created profile to be verified
+            user.userprofile.email_verified = True
+            user.userprofile.save()
+            messages.success(request, 'Registration successful! You can now log in.')
             return redirect('login')
         else:
             for field, errors in form.errors.items():
