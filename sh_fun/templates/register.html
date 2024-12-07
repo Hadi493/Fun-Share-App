@@ -9,8 +9,22 @@
             <div class="card">
                 <div class="card-body p-4">
                     <div class="text-center mb-4">
-                        <h1 class="h3 fw-bold mb-2">Create Account</h1>
+                        <h1 class="h3 fw-bold">Create Account</h1>
                         <p class="text-muted">Join Fun App and start sharing moments</p>
+                    </div>
+
+                    <!-- Social Login Buttons -->
+                    <div class="mb-4">
+                        <a href="{% url 'social:begin' 'github' %}" class="btn btn-github btn-social w-100 mb-2">
+                            <i class="fab fa-github"></i>Continue with GitHub
+                        </a>
+                        <a href="{% url 'social:begin' 'twitter' %}" class="btn btn-twitter btn-social w-100">
+                            <i class="fab fa-twitter"></i>Continue with Twitter
+                        </a>
+                    </div>
+                    
+                    <div class="divider">
+                        <span>OR</span>
                     </div>
 
                     {% if messages %}
@@ -26,34 +40,24 @@
                         {% csrf_token %}
                         {% for field in form %}
                             <div class="form-group">
+                                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
                                 {{ field }}
                                 {% if field.errors %}
                                     {% for error in field.errors %}
-                                        <div class="invalid-feedback d-block">
+                                        <div class="invalid-feedback">
                                             {{ error }}
                                         </div>
                                     {% endfor %}
                                 {% endif %}
                             </div>
                         {% endfor %}
-
-                        <button class="btn btn-primary w-100" type="submit">
-                            <i class="fas fa-user-plus me-2"></i>Create Account
-                        </button>
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary">Create Account</button>
+                        </div>
                     </form>
 
                     <div class="text-center mt-4">
-                        <p class="text-muted mb-4">Or register with</p>
-                        <a href="{% url 'social:begin' 'google-oauth2' %}" class="btn btn-outline-secondary w-100">
-                            <i class="fab fa-google me-2"></i>Sign up with Google
-                        </a>
-                    </div>
-
-                    <div class="text-center mt-4">
-                        <p class="text-muted mb-0">
-                            Already have an account? 
-                            <a href="{% url 'login' %}">Sign in</a>
-                        </p>
+                        <p class="text-muted">Already have an account? <a href="{% url 'login' %}">Sign in</a></p>
                     </div>
                 </div>
             </div>

@@ -14,10 +14,16 @@ SECRET_KEY = 'django-insecure-your-secret-key'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '9033-103-142-80-117.ngrok-free.app']
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    '.ngrok-free.app',  # This will match any subdomain of ngrok-free.app
+]
 
 # CSRF Trusted Origins for ngrok
-CSRF_TRUSTED_ORIGINS = ['https://9033-103-142-80-117.ngrok-free.app']
+CSRF_TRUSTED_ORIGINS = [
+    f'https://{host}' for host in ALLOWED_HOSTS if host.endswith('.ngrok-free.app')
+]
 
 # Application definition
 INSTALLED_APPS = [
@@ -40,6 +46,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
+    'fun_app.middleware.NgrokSkipWarningMiddleware',
 ]
 
 ROOT_URLCONF = 'fun_app.urls'
@@ -91,22 +98,19 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Authentication backends
 AUTHENTICATION_BACKENDS = (
-    'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.github.GithubOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
 
 # Social Auth settings
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'fun_list'
-SOCIAL_AUTH_LOGIN_ERROR_URL = 'login'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'  # Redirect to home page after login
+SOCIAL_AUTH_LOGIN_ERROR_URL = '/login/'  # Redirect to login page on error
 
-# Google OAuth2 settings
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = 'your-google-oauth2-key'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'your-google-oauth2-secret'
-SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
-    'https://www.googleapis.com/auth/userinfo.email',
-    'https://www.googleapis.com/auth/userinfo.profile',
-]
+# GitHub OAuth settings
+SOCIAL_AUTH_GITHUB_KEY = 'Ov23liW7m8vRb6Rurbxw'  # Your GitHub Client ID
+SOCIAL_AUTH_GITHUB_SECRET = '00fbbc6cb9fe672f58a2a3615f1515485424fc0a'  # Your GitHub Client Secret
+SOCIAL_AUTH_GITHUB_SCOPE = ['user:email']
 
 # Social Auth Pipeline
 SOCIAL_AUTH_PIPELINE = (
@@ -121,6 +125,11 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
 )
+
+# Additional Social Auth Settings
+SOCIAL_AUTH_LOGIN_ERROR_URL = '/login/'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
+SOCIAL_AUTH_RAISE_EXCEPTIONS = False
 
 # Email Configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
