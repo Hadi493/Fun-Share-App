@@ -5,7 +5,7 @@ A Django-based social sharing application where users can share fun moments with
 ## Project Status
 
  **This is a learning project currently under development** 
- *Complete V1.0.0*
+*and Complete V1.0.0*
 
 ## Features
 
