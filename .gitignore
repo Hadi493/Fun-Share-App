@@ -1,7 +1,6 @@
 # Python
 __pycache__/
 *.py[cod]
-*$py.class
 
 # Django
 *.log
@@ -16,31 +15,14 @@ staticfiles/
 # Virtual Environment
 .venv/
 venv/
-ENV/
 
 # IDE
 .vscode/
 .idea/
-*.swp
-*.swo
-.ropeproject/
 
 # Environment variables
 .env
-.env.local
-.env.*.local
 
 # System Files
 .DS_Store
 Thumbs.db
-
-# Development/Debug
-*.bak
-*.tmp
-*.temp
-.coverage
-htmlcov/
-.pytest_cache/
-
-# ngrok
-ngrok.yml
