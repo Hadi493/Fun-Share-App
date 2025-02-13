@@ -17,12 +17,10 @@ DEBUG = True
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
-    '.ngrok-free.app',  # This will match any subdomain of ngrok-free.app
 ]
 
 # CSRF Settings
 CSRF_TRUSTED_ORIGINS = [
-    'https://*.ngrok-free.app',
     'http://localhost:8000',
     'http://127.0.0.1:8000'
 ]
@@ -48,7 +46,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
-    'fun_app.middleware.NgrokSkipWarningMiddleware',
 ]
 
 ROOT_URLCONF = 'fun_app.urls'
