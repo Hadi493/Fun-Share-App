@@ -1,6 +1,6 @@
-# Fun Share App
+# Fun-Share-App
 
-A Django-based social sharing application where users can share fun moments with others.
+A Django-based social media platform for sharing fun moments and connecting with friends.
 
 ## Project Status
 
@@ -9,31 +9,33 @@ A Django-based social sharing application where users can share fun moments with
 
 ## Features
 
-- User Authentication (Login/Register)
-- Create, Read, Update, Delete fun posts
-- Image upload support
-- Mobile-friendly design
+- User authentication with GitHub OAuth
+- Share posts with images and text
+- Like and comment on posts
+- User profiles
+- Mobile-responsive design
 - Dark mode support
 
-## Tech Stack
+## Technology Stack
 
-- Python 3.12
-- Django
-- Bootstrap 5
+- Django 5.1
+- Python 3.x
 - SQLite3
+- HTML/CSS
+- Social Auth Django
 
-## Setup
+## Setup Instructions
 
-1. Create a virtual environment:
+1. Clone the repository:
 ```bash
-python -m venv .venv
+git clone https://github.com/yourusername/Fun-Share-App.git
+cd Fun-Share-App
 ```
 
-2. Activate the virtual environment:
+2. Create and activate virtual environment:
 ```bash
-source .venv/bin/activate  # Linux/Mac
-# or
-.venv\Scripts\activate  # Windows
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
 3. Install dependencies:
@@ -41,12 +43,25 @@ source .venv/bin/activate  # Linux/Mac
 pip install -r requirements.txt
 ```
 
-4. Run migrations:
+4. Configure environment variables:
+- Create a `.env` file in the project root
+- Add your GitHub OAuth credentials:
+  ```
+  SOCIAL_AUTH_GITHUB_KEY=your_github_client_id
+  SOCIAL_AUTH_GITHUB_SECRET=your_github_client_secret
+  ```
+
+5. Run migrations:
 ```bash
 python manage.py migrate
 ```
 
-5. Start the development server:
+6. Create superuser (optional):
+```bash
+python manage.py createsuperuser
+```
+
+7. Run development server:
 ```bash
 python manage.py runserver
 ```
@@ -54,24 +69,23 @@ python manage.py runserver
 ## Project Structure
 
 ```
-fun_app/
-├── manage.py
-├── templates/
-│   └── index.html
-├── sh_fun/
-│   ├── templates/
-│   │   ├── fun_list.html
-│   │   ├── fun_detail.html
-│   │   ├── create_fun.html
-│   │   ├── fun_edit.html
-│   │   └── fun_delete.html
-│   ├── models.py
-│   ├── views.py
-│   └── urls.py
-└── static/
-    └── style.css
+Fun-Share-App/
+├── fun_app/          # Main project directory
+├── sh_fun/          # Main application directory
+├── static/          # Static files (CSS, JS, images)
+├── media/          # User uploaded files
+├── templates/      # HTML templates
+└── manage.py       # Django management script
 ```
 
 ## Contributing
 
-This is a personal learning project, but suggestions and feedback are welcome!
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE.md file for details
